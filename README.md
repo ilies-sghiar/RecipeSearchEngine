@@ -1,13 +1,14 @@
 # Recipe Search Engine
 
-<div style="display: flex; align-items: center; gap: 20px;">
-  <div>
-    Ce projet propose une API permettant de rechercher, de manière sémantique, des recettes de cuisine stockées dans une base Elasticsearch grâce à des embeddings vectoriels issus de modèles de langage.<br><br>
-    Un script dédié permet l’indexation des données dans Elasticsearch.<br><br>
-    À terme, un frontend sera ajouté pour offrir une expérience de recherche complète.
-  </div>
+Ce projet implémente une API permettant de rechercher, de manière sémantique, des recettes de cuisine stockées dans une base Elasticsearch grâce à des embeddings vectoriels issus de modèles de langage.
+
+Un script dédié permet l’indexation des données dans Elasticsearch.
+
+À terme, un frontend sera ajouté pour offrir une expérience de recherche complète.
+
+<p align="center">
   <img src="https://marketplace.canva.com/EAF_asJtgSY/2/0/566w/canva-white-minimalist-food-recipe-magazine-a4-Cln80zeGmm0.jpg" alt="Recipe Image" height="250"/>
-</div>
+</p>
 
 **Disclaimer :** Le projet a été initialement développé sous Linux. Il devrait fonctionner également sur Windows, mais cela n’est pas garanti à 100 %.
 
