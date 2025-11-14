@@ -1,0 +1,60 @@
+[project]
+
+name = "searchengine"
+
+version = "1.0.0"
+
+description = "Ce projet implémente une API permettant d’interroger une base de données Elasticsearch contenant des recettes de cuisine. Les recherches s’effectuent de manière sémantique en utilisant des embeddings vectoriels issus de modèles de langage. Un script permet également d’indexer des données dans Elasticsearch. À terme, un frontend sera ajouté pour offrir un moteur de recherche complet et fonctionnel."
+
+authors = [
+    {name = "Iliès Sghiar",email = "iliesghiar@gmail.com"}
+]
+
+repository = "https://github.com/ilies-sghiar/RecipeSearchEngine.git"
+
+keywords = [
+    "search engine",
+    "elasticsearch",
+    "vector search",
+    "semantic search",
+    "fastapi",
+    "sentence transformers",
+    "nlp",
+    "recipe search",
+    "python"
+]
+
+license = {text = "MIT"}
+
+readme = "README.md"
+
+readme-content-type = "text/markdown"
+
+requires-python = ">=3.12"
+
+dependencies = [
+    "sentence-transformers (>=5.1.2,<6.0.0)",
+    "fastapi (>=0.121.2,<0.122.0)",
+    "uvicorn (>=0.38.0,<0.39.0)",
+    "pydantic (>=2.12.4,<3.0.0)",
+    "elasticsearch (>=8.0.0,<9.0.0)"
+]
+
+[tool.poetry]
+packages = [{include = "searchengine", from = "src"}]
+
+[tool.poetry.scripts]
+index-recipes = "searchengine.indexing:main"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[dependency-groups]
+dev = [
+    "pytest (>=9.0.1,<10.0.0)",
+    "pytest-asyncio (>=1.3.0,<2.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
+]
+
+

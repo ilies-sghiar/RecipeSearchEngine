@@ -1,2 +1,6 @@
 elasticsearch/es_data
 elasticsearch/kb_data
+index.log
+.pytest_cache
+__pycache__/
+*.pyc
