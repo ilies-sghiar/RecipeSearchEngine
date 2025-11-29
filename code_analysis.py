@@ -1,5 +1,5 @@
 import subprocess
-import sys
+
 
 def run_command(command):
     print(f"Running: {' '.join(command)}")
@@ -8,6 +8,7 @@ def run_command(command):
         print(f"Command {' '.join(command)} failed!")
         return False
     return True
+
 
 def main():
     check_passed = 0
