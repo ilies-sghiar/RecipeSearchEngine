@@ -1,8 +1,10 @@
-from elasticsearch import Elasticsearch
-import logging
 import json
+import logging
 import os
+
 from sentence_transformers import SentenceTransformer
+
+from elasticsearch import Elasticsearch
 
 # Configure logging
 logging.basicConfig(
@@ -27,6 +29,7 @@ def generate_embedding(text: str, model: SentenceTransformer) -> list[float]:
     embedding = model.encode(text, normalize_embeddings=True)
     return embedding.tolist()
 
+
 def initialize_es() -> Elasticsearch:
     """
     Initialize Elasticsearch client with SSL verification disabled (for local testing)
@@ -41,6 +44,7 @@ def initialize_es() -> Elasticsearch:
         exit()
 
     return es
+
 
 def index_combined_documents(
     es: Elasticsearch,
@@ -60,7 +64,7 @@ def index_combined_documents(
                 if isinstance(value, list):
                     return ", ".join(str(item) for item in value)
                 return str(value)
-            
+
             # Gérer recipeInstructions spécifiquement
             instructions_text = ""
             recipe_instructions = doc.get("recipeInstructions", [])
@@ -71,7 +75,7 @@ def index_combined_documents(
                 )
             else:
                 instructions_text = to_text(recipe_instructions)
-            
+
             # Normaliser tous les champs en texte
             name_text = to_text(doc.get("name"))
             description_text = to_text(doc.get("description"))
@@ -82,24 +86,26 @@ def index_combined_documents(
             category_text = to_text(doc.get("recipeCategory"))
             method_text = to_text(doc.get("cookingMethod"))
             cuisine_text = to_text(doc.get("recipeCuisine"))
-            
+
             # Construire le texte à embedder
-            text_to_embed = " ".join([
-                name_text,
-                description_text,
-                ingredients_text,
-                instructions_text,
-                prep_time_text,
-                cook_time_text,
-                total_time_text,
-                category_text,
-                method_text,
-                cuisine_text,
-            ])
-            
+            text_to_embed = " ".join(
+                [
+                    name_text,
+                    description_text,
+                    ingredients_text,
+                    instructions_text,
+                    prep_time_text,
+                    cook_time_text,
+                    total_time_text,
+                    category_text,
+                    method_text,
+                    cuisine_text,
+                ]
+            )
+
             # Générer l'embedding
             embedding = generate_embedding(text_to_embed, model)
-            
+
             # Indexer UNIQUEMENT les champs normalisés + embedding
             doc_to_index = {
                 "name": name_text,
@@ -114,14 +120,15 @@ def index_combined_documents(
                 "recipeCuisine": cuisine_text,
                 "embedding": embedding,
             }
-            
+
             # Document indexing
             response = es.index(index=index_name, body=doc_to_index)
             logging.info(f"Document {i} indexé avec succès : {response['result']}")
-            
+
         except Exception as e:
             logging.error(f"Erreur lors de l'indexation du document {i}: {e}")
-            
+
+
 def main():
     es = initialize_es()
 

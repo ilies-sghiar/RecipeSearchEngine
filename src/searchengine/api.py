@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
-from fastapi.middleware.cors import CORSMiddleware
+
 from elasticsearch import Elasticsearch
-import uvicorn
 
 # Initialize FastAPI
 app = FastAPI()
@@ -102,6 +102,7 @@ def get_document_by_name(name: str):
     }
     return document
 
+
 """
 # FastAPI endpoint for retrieving document details by name
 @app.post("/get-document/")
@@ -109,6 +110,7 @@ def get_document_endpoint(request: NameRequest):
     document = get_document_by_name(request.name)
     return {"document": document}
 """
+
 
 # FastAPI endpoint
 @app.post("/search-names/")
@@ -118,5 +120,3 @@ def search_names_endpoint(request: QueryRequest):
     print(names)
 
     return {"names": names}
-
-

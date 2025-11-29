@@ -145,6 +145,18 @@ Get-Process uvicorn | Stop-Process
 
 ---
 
+## Analyse Statique du code
+
+Pour exécuter l'analyse statique du code (black, isort et flake8) :
+
+```bash
+poetry run code_analysis
+```
+
+(mode développement requis : `poetry install --with dev`) 
+
+---
+
 ## Tests
 
 Pour exécuter les tests (mode développement requis : `poetry install --with dev`) :

@@ -1,7 +1,9 @@
 import pytest
-from httpx import AsyncClient, ASGITransport
-from searchengine.api import app
+from httpx import ASGITransport, AsyncClient
+
 from elasticsearch import Elasticsearch
+from searchengine.api import app
+
 
 @pytest.mark.asyncio
 async def test_cluster_is_ok():
@@ -12,6 +14,7 @@ async def test_cluster_is_ok():
     )
 
     assert es.ping()  # cluster doit être lancé
+
 
 @pytest.mark.asyncio
 async def test_search_names_endpoint():
