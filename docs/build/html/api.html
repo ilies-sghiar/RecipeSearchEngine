@@ -323,11 +323,26 @@
                   
   <section id="module-searchengine.api">
 <span id="module-api"></span><h1>Module API<a class="headerlink" href="#module-searchengine.api" title="Link to this heading">#</a></h1>
-<p>API principale</p>
+<p>API principale de recherche et récupération de recettes de cuisine.</p>
+<p>Ce module fournit des endpoints FastAPI pour :
+- Rechercher des noms de recettes à partir d’une requête texte en utilisant des embeddings sémantiques.
+- Connecter à Elasticsearch pour effectuer les recherches KNN et récupérer les recettes.
+- Générer des embeddings de texte via le modèle SentenceTransformer “all-MiniLM-L6-v2”.</p>
+<p>Endpoints principaux :
+- POST /search-names/ : Rechercher des noms de recettes correspondant à une requête.
+- POST /get-document/ : (optionnel) Récupérer la recette complète par son nom.</p>
+<p>Note :
+- Le module utilise Elasticsearch local sans vérification SSL pour les tests.
+- Les embeddings sont normalisés avant la recherche KNN.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="searchengine.api.NameRequest">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">NameRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#searchengine.api.NameRequest" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Corps de requête pour récupérer un document par son nom.</p>
+<dl class="simple">
+<dt>Attributs :</dt><dd><p>name (str) : Le nom du document à récupérer.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="searchengine.api.NameRequest.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#searchengine.api.NameRequest.model_config" title="Link to this definition">#</a></dt>
@@ -345,6 +360,11 @@
 <dt class="sig sig-object py" id="searchengine.api.QueryRequest">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">QueryRequest</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#searchengine.api.QueryRequest" title="Link to this definition">#</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Corps de requête pour une recherche sémantique.</p>
+<dl class="simple">
+<dt>Attributs :</dt><dd><p>query (str) : Le texte de la requête pour la recherche sémantique.</p>
+</dd>
+</dl>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="searchengine.api.QueryRequest.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#searchengine.api.QueryRequest.model_config" title="Link to this definition">#</a></dt>
@@ -361,22 +381,64 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="searchengine.api.generate_embedding">
 <span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">generate_embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SentenceTransformer</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#searchengine.api.generate_embedding" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="searchengine.api.get_document_by_name">
-<span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">get_document_by_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#searchengine.api.get_document_by_name" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<dd><p>Génère un vecteur d’embedding normalisé pour un texte donné.</p>
+<p>Utilise un modèle SentenceTransformer pour encoder le texte en un vecteur
+normalisé. Retourne un vecteur nul si le texte est vide.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> (<em>str</em>) – Le texte à encoder.</p></li>
+<li><p><strong>model</strong> (<em>SentenceTransformer</em>) – Modèle SentenceTransformer préchargé.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Vecteur normalisé représentant l’embedding du texte.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[float]</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="searchengine.api.search_names">
-<span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">search_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#searchengine.api.search_names" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">search_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#searchengine.api.search_names" title="Link to this definition">#</a></dt>
+<dd><p>Effectue une recherche sémantique KNN dans Elasticsearch pour trouver
+les noms de recettes les plus proches d’une requête donnée.</p>
+<p>Génère un embedding pour la requête et utilise Elasticsearch pour
+retrouver les noms de recettes les plus similaires.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>query_text</strong> (<em>str</em>) – Texte de la requête pour la recherche sémantique.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Liste des noms de recettesles plus pertinents dans l’index Elasticsearch.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list[str]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>HTTPException</strong> – Si la requête Elasticsearch échoue.</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="searchengine.api.search_names_endpoint">
-<span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">search_names_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#searchengine.api.QueryRequest" title="searchengine.api.QueryRequest"><span class="pre">QueryRequest</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#searchengine.api.search_names_endpoint" title="Link to this definition">#</a></dt>
-<dd></dd></dl>
+<span class="sig-prename descclassname"><span class="pre">searchengine.api.</span></span><span class="sig-name descname"><span class="pre">search_names_endpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">request</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#searchengine.api.QueryRequest" title="searchengine.api.QueryRequest"><span class="pre">QueryRequest</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#searchengine.api.search_names_endpoint" title="Link to this definition">#</a></dt>
+<dd><p>Endpoint FastAPI pour effectuer une recherche sémantique de recette à partir d’une requête.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>request</strong> (<a class="reference internal" href="#searchengine.api.QueryRequest" title="searchengine.api.QueryRequest"><em>QueryRequest</em></a>) – Corps de requête contenant le texte de recherche.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Réponse JSON contenant la liste des noms de recettes correspondants.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, list[str]]</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 
@@ -438,7 +500,6 @@
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#searchengine.api.generate_embedding"><code class="docutils literal notranslate"><span class="pre">generate_embedding()</span></code></a></li>
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#searchengine.api.get_document_by_name"><code class="docutils literal notranslate"><span class="pre">get_document_by_name()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#searchengine.api.search_names"><code class="docutils literal notranslate"><span class="pre">search_names()</span></code></a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#searchengine.api.search_names_endpoint"><code class="docutils literal notranslate"><span class="pre">search_names_endpoint()</span></code></a></li>
 </ul>
