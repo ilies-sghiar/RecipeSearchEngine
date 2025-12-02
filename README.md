@@ -29,16 +29,6 @@ Lancez les services Elasticsearch containerisés (nécessaires pour stocker les 
 make
 ```
 
-Quelques commandes utiles du Makefile :
-
-- `make elasticsearch` : Démarre les services Docker Elasticsearch
-- `make elasticsearch-stop` : Arrête les services Docker Elasticsearch
-- `make clean` : Supprime les services Docker Elasticsearch
-
-Vérifiez que les services sont actifs en accédant aux adresses suivantes :
-
-- [http://localhost:5601/](http://localhost:5601/) : Kibana (visualisation des données)
-- [http://localhost:9200/](http://localhost:9200/) : Elasticsearch (stockage des données, vide au démarrage)
 
 Installez l’environnement Python pour l’indexation des données et le lancement de l’API :
 
@@ -84,95 +74,6 @@ poetry run uvicorn searchengine.api:app --reload &
 
 ```bash
 Start-Process poetry -ArgumentList "run uvicorn searchengine.api:app --reload"
-```
-
-Sinon, cette commande fonctionne sur les deux systèmes, mais l'API n'est pas en arrière plan:
-
-```bash
-poetry run uvicorn searchengine.api:app --reload
-```
-
-### Requêter l’API
-
-Pour interroger l’API :
-
-```bash
-curl -X POST "http://127.0.0.1:8000/search-names/"
--H "Content-Type: application/json"
--d '{"query": "Entrer votre recherche ici"}'
-```
-
-Exemple :
-
-```bash
-curl -X POST "http://127.0.0.1:8000/search-names/"
--H "Content-Type: application/json"
--d '{"query": "Smoothie"}'
-```
-
-Réponse :
-
-```json
-{
-"names": [
-"Summer Breeze Smoothie",
-"Green Pineapple Power Smoothie",
-"Tangy Fruit Salad",
-"Cantaloupe Crush",
-"Mango Shake",
-"Mai Tai",
-"Piña Colada",
-"Any Berry Sauce",
-"Multigrain Apple Muffins",
-"Apple Banana Salad with Peanuts"
-]
-}
-```
-
-### Arrêt de l’API
-
-#### Sous Linux :
-
-```bash
-pkill -f uvicorn
-```
-
-#### Sous Windows :
-
-```bash
-Get-Process uvicorn | Stop-Process
-```
-
----
-
-## Analyse Statique du code
-
-Pour exécuter l'analyse statique du code (black, isort et flake8) :
-
-```bash
-poetry run code_analysis
-```
-
-(mode développement requis : `poetry install --with dev`) 
-
----
-
-## Tests
-
-Pour exécuter les tests (mode développement requis : `poetry install --with dev`) :
-
-```bash
-poetry run pytest -v
-```
-
----
-
-## Packaging
-
-Pour créer les fichiers de distribution (`.whl` et `.tar.gz`) :
-
-```bash
-poetry build
 ```
 
 ## Licence
