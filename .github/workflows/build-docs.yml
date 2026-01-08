@@ -32,7 +32,7 @@ jobs:
 
       # Genereate docs
       - name: Build HTML documentation
-        run: poetry run make html
+        run: cd docs && poetry run make html
 
       # Deploy to GitHub Pages
       - name: Deploy to GitHub Pages
