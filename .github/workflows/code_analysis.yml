@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  tests:
+  code-analysis:
     runs-on: ubuntu-latest
 
     steps:
