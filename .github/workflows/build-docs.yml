@@ -42,4 +42,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}  
           publish_dir: docs/build/html  
           publish_branch: gh-pages
-          clean: true
