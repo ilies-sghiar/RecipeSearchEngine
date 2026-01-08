@@ -1,0 +1,51 @@
+name: tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.9, 3.10, 3.11]  
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Python version from matrix
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+
+      # Install Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      # Install dependencies
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      # Build / start containers via make
+      - name: Build containers
+        run: make
+
+      # Index recipes
+      - name: Index recipes
+        run: poetry run index-recipes
+
+      # Start FastAPI in background
+      - name: Start FastAPI
+        run: |
+          poetry run uvicorn searchengine.api:app --host 0.0.0.0 --port 8000 &
+          sleep 5   # attend que le serveur soit prêt
+
+      # Run unit tests
+      - name: Run tests
+        run: poetry run pytest
