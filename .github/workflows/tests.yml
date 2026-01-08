@@ -44,6 +44,16 @@ jobs:
       - name: Build containers
         run: make
 
+      # Wait for Elasticsearch
+      - name: Wait for Elasticsearch
+        run: |
+          echo "Waiting for Elasticsearch..."
+          until curl -s http://localhost:9200 > /dev/null; do
+            echo "Elasticsearch not ready yet..."
+            sleep 5
+          done
+          echo "Elasticsearch is ready!"
+
       # Index recipes
       - name: Index recipes
         run: poetry run index-recipes
