@@ -1,0 +1,64 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.12, 3.13]  
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Python version from matrix
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Install Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Add Poetry to PATH
+        run: echo "/home/runner/.local/bin" >> $GITHUB_PATH
+
+      # Install dependencies
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      # Run unit tests
+      - name: Run tests
+        run: poetry run pytest
+
+      # Generate Changelog
+      - name: Generate Changelog
+        id: changelog
+        run: |
+          # Récupère le dernier tag
+          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
+          echo "Last tag: $LAST_TAG"
+          # Génère le changelog entre le dernier tag et HEAD
+          git log $LAST_TAG..HEAD --pretty=format:'- %s (%an)' > changelog.md
+          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
+          cat changelog.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      # Create Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          body: ${{ env.CHANGELOG }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

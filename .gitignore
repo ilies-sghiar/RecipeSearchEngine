@@ -5,3 +5,4 @@ index.log
 __pycache__/
 *.pyc
 .mypy_cache/
+dist/
