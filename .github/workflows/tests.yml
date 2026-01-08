@@ -23,17 +23,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Install Poetry
-      - name: Install Poetry
-        uses: snok/install-poetry@v1
-
-      - name: Add Poetry to PATH
-        run: echo "/home/runner/.local/bin" >> $GITHUB_PATH
-
-      # Install dependencies
-      - name: Install dependencies
-        run: poetry install --with dev
-
       # Install Docker Compose
       - name: Install Docker Compose
         run: |
@@ -53,6 +42,17 @@ jobs:
             sleep 5
           done
           echo "Elasticsearch is ready!"
+
+      # Install Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Add Poetry to PATH
+        run: echo "/home/runner/.local/bin" >> $GITHUB_PATH
+
+      # Install dependencies
+      - name: Install dependencies
+        run: poetry install --with dev
 
       # Index recipes
       - name: Index recipes
