@@ -1,4 +1,4 @@
-name: code_analysis
+name: tests
 
 on:
   push:
@@ -30,6 +30,15 @@ jobs:
       - name: Install dependencies
         run: poetry install --with dev
 
-      # Run unit code_analysis
-      - name: Run code_analysis
-        run: poetry run code_analysis
+      # Genereate docs
+      - name: Build HTML documentation
+        run: poetry run make html
+
+      # Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v6
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  
+          publish_dir: docs/build/html  
+          publish_branch: gh-pages
+          clean: true
