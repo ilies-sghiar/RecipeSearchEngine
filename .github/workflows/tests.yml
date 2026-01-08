@@ -23,26 +23,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Install Docker Compose
-      - name: Install Docker Compose
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y docker-compose
-
-      # Build / start containers via make
-      - name: Build containers
-        run: make
-
-      # Wait for Elasticsearch
-      - name: Wait for Elasticsearch
-        run: |
-          echo "Waiting for Elasticsearch..."
-          until curl -s http://localhost:9200 > /dev/null; do
-            echo "Elasticsearch not ready yet..."
-            sleep 5
-          done
-          echo "Elasticsearch is ready!"
-
       # Install Poetry
       - name: Install Poetry
         uses: snok/install-poetry@v1
@@ -53,16 +33,6 @@ jobs:
       # Install dependencies
       - name: Install dependencies
         run: poetry install --with dev
-
-      # Index recipes
-      - name: Index recipes
-        run: poetry run index-recipes
-
-      # Start FastAPI in background
-      - name: Start FastAPI
-        run: |
-          poetry run uvicorn searchengine.api:app --host 0.0.0.0 --port 8000 &
-          sleep 5   # attend que le serveur soit prêt
 
       # Run unit tests
       - name: Run tests
