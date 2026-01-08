@@ -41,14 +41,15 @@ jobs:
       - name: Generate Changelog
         id: changelog
         run: |
-          # Récupère le dernier tag
-          LAST_TAG=$(git describe --tags --abbrev=0 HEAD^)
-          echo "Last tag: $LAST_TAG"
-          # Génère le changelog entre le dernier tag et HEAD
-          git log $LAST_TAG..HEAD --pretty=format:'- %s (%an)' > changelog.md
-          echo "CHANGELOG<<EOF" >> $GITHUB_ENV
-          cat changelog.md >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          echo "Previous tag: $PREVIOUS_TAG"
+          CHANGELOG=$(git log $PREVIOUS_TAG..HEAD --pretty=format:'- %s (%an)')
+          
+          # Sauvegarde le changelog dans GITHUB_OUTPUT
+          {
+            echo 'changelog<<CHANGELOG_DELIMITER'
+            echo "$CHANGELOG"
+            echo 'CHANGELOG_DELIMITER'
+          } >> $GITHUB_OUTPUT
 
       # Create Release
       - name: Create GitHub Release
@@ -56,7 +57,7 @@ jobs:
         with:
           tag_name: ${{ github.ref_name }}
           name: Release ${{ github.ref_name }}
-          body: ${{ env.CHANGELOG }}
+          body: ${{ steps.changelog.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
