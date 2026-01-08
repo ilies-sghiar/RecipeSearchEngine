@@ -1,0 +1,39 @@
+name: code_analysis
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: [3.12, 3.13]  
+
+    steps:
+      # Checkout repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Set up Python version from matrix
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Install Poetry
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+
+      - name: Add Poetry to PATH
+        run: echo "/home/runner/.local/bin" >> $GITHUB_PATH
+
+      # Install dependencies
+      - name: Install dependencies
+        run: poetry install --with dev
+
+      # Run unit code_analysis
+      - name: Run code_analysis
+        run: poetry run code_analysis
